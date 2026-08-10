@@ -69,9 +69,42 @@ for i in $(seq 1 15); do
 done; echo
 ```
 
+## Kết Quả Chạy Thật
+
+Dán output của các lệnh trên vào đây:
+
+```http
+# 1. Liveness (/healthz)
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{"status":"ok","service":"day12-chat-service","version":"1.0.0"}
+
+# 2. Readiness (/readyz)
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{"status":"ready","redis":true}
+
+# 3. Không có token (/chat)
+HTTP/1.1 401 Unauthorized
+www-authenticate: Bearer
+Content-Type: application/json
+
+{"detail":"invalid or missing bearer token"}
+
+# 4. Có token hợp lệ (/chat)
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{"reply":"Ngắn gọn: Deploy la gi phụ thuộc vào ba yếu tố...","client_id":"sv-test","turns_before":0,"usd_cost":2.265e-05,"usage":{"prompt":3,"completion":37}}
+
+# 5. Rate limit (15 lần gọi)
+200 200 200 200 200 200 200 200 200 200 429 429 429 429 429
+```
+
 ## Ảnh Chụp Màn Hình
 
 Đã lưu trong thư mục `screenshots/`:
 - `screenshots/dashboard.png` — trang quản lý service trên Render
 - `screenshots/healthz.png` — kết quả gọi `/healthz`
-
